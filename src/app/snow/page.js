@@ -1,17 +1,32 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import PokemonMap from "../components/PokemonMap";
 
 const snowPokemons = [
-  { ride: "Bike", name: "Snover 🌨", img: "/images/snover.png" },
-  { ride: "Auto", name: "Glalie ❄", img: "/images/glalie.png" },
-  { ride: "Mini", name: "Cloyster 🐗", img: "/images/Cloyster.png" },
-  { ride: "Pro", name: "Mamoswine 🐘", img: "/images/mamoswine.png" },
-  { ride: "Luxury", name: "Articuno ❄", img: "/images/articuno.png" },
+  { ride: "PokeDash", name: "Snover", img: "/images/snover.png" },
+  { ride: "PokePod", name: "Glalie", img: "/images/glalie.png" },
+  { ride: "PokeGo", name: "Cloyster", img: "/images/Cloyster.png" },
+  { ride: "PokeXpress", name: "Mamoswine", img: "/images/mamoswine.png" },
+  { ride: "PokeElite", name: "Articuno", img: "/images/articuno.png" },
 ];
 
 export default function Snow() {
+  const searchParams = useSearchParams();
+
+  const pickup = {
+    name: searchParams.get("pickup"),
+    lat: parseFloat(searchParams.get("pickupLat")),
+    lng: parseFloat(searchParams.get("pickupLng")),
+  };
+
+  const dropoff = {
+    name: searchParams.get("dropoff"),
+    lat: parseFloat(searchParams.get("dropoffLat")),
+    lng: parseFloat(searchParams.get("dropoffLng")),
+  };
+
   return (
     <div className="p-6 space-y-10 min-h-screen bg-gray-50">
       <h1 className="text-3xl font-bold text-center">❄ Snow / Ice Regions</h1>
@@ -20,27 +35,29 @@ export default function Snow() {
         {snowPokemons.map((pokemon, i) => (
           <Link
             key={i}
-            href={`/arriving?terrain=snow&pokemon=${encodeURIComponent(pokemon.name)}`}
+            href={`/arriving?terrain=snow&pokemon=${encodeURIComponent(
+              pokemon.name
+            )}`}
           >
-            <div className="p-4 bg-white rounded-2xl shadow hover:shadow-lg transition cursor-pointer">
+            <div className="p-4 bg-black rounded-2xl shadow hover:shadow-lg transition cursor-pointer h-60 flex flex-col justify-center">
               <Image
                 src={pokemon.img}
                 alt={pokemon.name}
-                width={120}
-                height={120}
+                width={90}
+                height={90}
                 className="mx-auto"
               />
-              <h3 className="mt-2 text-lg font-semibold text-center">
+              <h3 className="mt-2 text-xl text-white font-bold text-center">
                 {pokemon.name}
               </h3>
-              <p className="text-sm text-gray-600 text-center">{pokemon.ride}</p>
+              <p className="text-md text-blue-300 text-center ">{pokemon.ride}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      <PokemonMap />
-
+      {/* Map with pickup/dropoff */}
+      <PokemonMap pickup={pickup} dropoff={dropoff} />
     </div>
   );
 }

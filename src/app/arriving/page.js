@@ -1,6 +1,31 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 
+// Array of random Pokémon messages
+const cantArriveMessages = [
+  "Your Pokémon is busy hosting a taco party in the tall grass.",
+  "Your Pokémon is currently moonlighting as a magician—don’t spoil the trick!",
+  "Your Pokémon is in deep meditation, trying to levitate a Pokéball.",
+  "Your Pokémon is busy tearing up the dance floor at an invisible disco.",
+  "Your Pokémon is painting a self-portrait with berries as colors.",
+  "Your Pokémon is slurping noodles at its favorite secret ramen shop.",
+  "Your Pokémon is writing a diary entry about “humans and their weird habits.”",
+  "Your Pokémon is chilling on a beach chair somewhere, sipping a coconut drink.",
+  "Your Pokémon is pedaling a tiny bike around the park.",
+  "Your Pokémon is sneaking cookies from Professor Oak’s kitchen.",
+  "Your Pokémon is on a top-secret spy mission—classified info only!",
+  "Your Pokémon is plotting an epic prank with a Meowth gang.",
+  "Your Pokémon might be time traveling—who can say?",
+  "Your Pokémon is writing letters to its long-lost friend in the wild.",
+  "🎭 Your Pokémon is undercover in a theater play, playing the villain."
+];
+
+// Function to pick a random message
+function getRandomCantArriveMessage() {
+  const randomIndex = Math.floor(Math.random() * cantArriveMessages.length);
+  return cantArriveMessages[randomIndex];
+}
+
 export default function ArrivingPage() {
   const search = useSearchParams();
   const router = useRouter();
@@ -27,24 +52,22 @@ export default function ArrivingPage() {
     );
   }
 
+  const randomMessage = getRandomCantArriveMessage();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 p-6">
       <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-6 text-center">
-        🚫 {pokemon} can’t arrive in {terrain.charAt(0).toUpperCase() + terrain.slice(1)}
+        🚫 {randomMessage}
       </h1>
 
-      {/* Use <img> for animated GIFs */}
-      <div className="relative w-64 h-64">
+      {/* Animated GIF */}
+      <div className="relative w-64 h-64 pt-20">
         <img
           src="/GIF/pikachu-running.gif"
           alt="Running Pokémon"
           className="w-full h-full object-contain animate-bounce"
         />
       </div>
-
-      <p className="mt-6 text-gray-700 text-lg text-center">
-        Try another Pokémon or a different terrain.
-      </p>
 
       <div className="mt-8 flex gap-3">
         <button
