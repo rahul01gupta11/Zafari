@@ -1,12 +1,28 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import L from "leaflet";
 import ReactDOMServer from "react-dom/server";
 
 export default function PokemonMap({ pickup, dropoff }) {
+  const mapRef = useRef(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Mark that we are on client
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return; // Do nothing on SSR
+
+    // Destroy existing map if exists
+    if (mapRef.current) {
+      mapRef.current.remove();
+    }
+
     const map = L.map("pokemon-map").setView([20, 77], 5);
+    mapRef.current = map;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
@@ -14,7 +30,6 @@ export default function PokemonMap({ pickup, dropoff }) {
 
     const bounds = [];
 
-    // Function to create DivIcon from React Icon
     const createDivIcon = (color = "red") =>
       L.divIcon({
         html: ReactDOMServer.renderToString(
@@ -25,7 +40,6 @@ export default function PokemonMap({ pickup, dropoff }) {
         iconAnchor: [15, 30],
       });
 
-    // Pickup marker
     if (pickup?.lat && pickup?.lng) {
       L.marker([pickup.lat, pickup.lng], { icon: createDivIcon("red") })
         .addTo(map)
@@ -33,7 +47,6 @@ export default function PokemonMap({ pickup, dropoff }) {
       bounds.push([pickup.lat, pickup.lng]);
     }
 
-    // Dropoff marker
     if (dropoff?.lat && dropoff?.lng) {
       L.marker([dropoff.lat, dropoff.lng], { icon: createDivIcon("green") })
         .addTo(map)
@@ -41,7 +54,6 @@ export default function PokemonMap({ pickup, dropoff }) {
       bounds.push([dropoff.lat, dropoff.lng]);
     }
 
-    // Draw polyline if both pickup & dropoff exist
     if (pickup?.lat && dropoff?.lat) {
       L.polyline(
         [
@@ -52,11 +64,10 @@ export default function PokemonMap({ pickup, dropoff }) {
       ).addTo(map);
     }
 
-    // Zoom map to show markers
     if (bounds.length > 0) {
       map.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [pickup, dropoff]);
+  }, [isClient, pickup, dropoff]);
 
   return <div id="pokemon-map" className="w-full h-96 rounded-lg shadow" />;
 }
